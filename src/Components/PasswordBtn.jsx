@@ -18,14 +18,15 @@ const PasswordBtn = () => {
   return (
     <button
       onClick={handleClick}
-      onMouseEnter={handleHover} // button hover pe bhi trigger
-      className="bg-green-500 px-4 py-2 hover:bg-green-400 rounded-2xl flex items-center justify-center text-black font-bold gap-2"
+      onMouseEnter={handleHover}
+      className="bg-green-500 px-4 py-2 hover:bg-green-400 rounded-2xl flex items-center justify-center text-white font-semibold gap-1"
     >
       <lord-icon
-        ref={iconRef}
         src="https://cdn.lordicon.com/vjgknpfx.json"
-        trigger="hover"  // keep hover, so icon self-hover bhi chalega
-        colors="primary:#000000,secondary:#000000"
+        trigger="hover"
+        stroke="bold"
+        state="hover-swirl"
+        colors="primary:#FFFFFF,secondary:#1B8501"
         style={{ width: "30px", height: "30px" }}
       ></lord-icon>
       ADD PASSWORD

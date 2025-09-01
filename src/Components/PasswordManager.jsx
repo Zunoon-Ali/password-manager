@@ -1,65 +1,272 @@
-import React from "react";
-import PasswordBtn from "./PasswordBtn";
+import React, { useEffect, useRef, useState } from "react";
+import Passop from "./Passop";
 
 const PasswordManager = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [form, setForm] = useState({ site: "", username: "", password: "" });
+  const [passwordArray, setPasswordArray] = useState([]);
+
+  const iconRef = useRef(null);
+
+  // ✅ Load from localStorage on mount
+  useEffect(() => {
+    const passwords = localStorage.getItem("passwords");
+    if (passwords) {
+      setPasswordArray(JSON.parse(passwords));
+    }
+  }, []);
+
+  // ✅ Save to localStorage whenever passwordArray changes
+  useEffect(() => {
+    if (passwordArray.length > 0) {
+      localStorage.setItem("passwords", JSON.stringify(passwordArray));
+    }
+  }, [passwordArray]);
+
+  const handleForm = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const togglePassword = () => {
+    setShowPassword((prev) => !prev);
+    iconRef.current?.play?.();
+  };
+
+  const handleAddPassword = () => {
+    if (!form.site || !form.username || !form.password) {
+      alert("⚠️ Please fill all fields");
+      return;
+    }
+    const newEntry = { ...form, id: Date.now() };
+    setPasswordArray([...passwordArray, newEntry]);
+    setForm({ site: "", username: "", password: "" }); // reset
+  };
+
+  const handleDelete = (id) => {
+    let c = confirm("Do you Really want to  delete this password from PassOp");
+    if (c) {
+      const filtered = passwordArray.filter((item) => item.id !== id);
+      setPasswordArray(filtered);
+      localStorage.setItem("passwords", JSON.stringify(filtered));
+    }
+  };
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert("✅ Copied to clipboard!");
+    });
+  };
+
+  const handleEdit = (id) => {
+    console.log("Edit the feild of ID :" + id);
+    setForm(passwordArray.filter((i) => i.id === id)[0]);
+    setPasswordArray(passwordArray.filter((i) => i.id !== id));
+  };
+
   return (
     <section
       id="password-manager"
-      className="relative min-h-screen flex items-start justify-center" // ensures section fills screen, content starts lower
+      className="relative min-h-[90vh] flex flex-col items-center justify-start"
     >
-      {/* background */}
+      {/* Background */}
       <div
         className="absolute inset-0 -z-10 h-full w-full bg-white 
-        bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
+        bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)]
         bg-[size:6rem_4rem]"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9EBFF,transparent)]" />
       </div>
 
-      {/* content */}
-      <div className="myContainer flex flex-col items-center text-center space-y-6 mt-10">
-        <div className="container">
-          {/* Heading */}
-          <h1 className="text-gray-800 text-3xl">
-            <span className="font-normal">&lt; </span>
-            PASS<span className="text-green-500">OP</span>
-            <span className="font-normal"> /&gt;</span>
-          </h1>
-          <p className="text-lg text-gray-600">Your Own Password Manager</p>
+      {/* Heading */}
+      <div className="w-[70%] mx-auto flex flex-col items-center text-center space-y-4 mt-10">
+        <Passop
+          pColor="text-gray-600"
+          spanColor="text-green-500"
+          textSize="text-4xl"
+          pWeight="font-extrabold"
+          spanWeight="font-light"
+        />
 
-          {/* Inputs */}
-          <div className="inputs w-full flex flex-col items-center space-y-6 mt-6">
-            {/* Top input (full width, centered) */}
+        <p className="text-lg text-gray-600">Your Own Password Manager</p>
+
+        {/* Input Fields */}
+        <div className="w-full flex flex-col items-center space-y-6 mt-6">
+          <input
+            type="text"
+            value={form.site}
+            name="site"
+            onChange={handleForm}
+            className="w-full md:w-3/4 py-3 px-6 rounded-xl border border-green-800 text-green-900
+                       placeholder-gray-500 focus:bg-green-100 focus:border-green-500
+                       focus:outline-none transition"
+            placeholder="Enter Website URL / Link ..."
+          />
+
+          <div className="flex md:flex-row flex-col w-full items-center justify-center gap-6 mt-2">
             <input
               type="text"
-              className="w-3/4 py-3 px-6 rounded-xl border border-green-800 text-green-900
-               placeholder-gray-500 focus:bg-green-100 focus:border-green-500
-               focus:outline-none transition"
-              placeholder="Enter Task"
+              value={form.username}
+              name="username"
+              onChange={handleForm}
+              className="w-full md:w-1/2 py-3 px-6 rounded-xl border border-green-800 text-green-900
+                         placeholder-gray-500 focus:bg-green-100 focus:border-green-500
+                         focus:outline-none transition"
+              placeholder="Enter Username"
             />
 
-            {/* Bottom two inputs with spacing */}
-            <div className="flex w-3/4 gap-6 mt-5">
+            {/* Password with toggle */}
+            <div className="relative w-full md:w-1/2">
               <input
-                type="text"
-                className="w-1/2 py-3 px-6 rounded-xl border border-green-800 text-green-900
-                 placeholder-gray-500 focus:bg-green-100 focus:border-green-500
-                 focus:outline-none transition"
-                placeholder="Enter Task"
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                name="password"
+                onChange={handleForm}
+                className="w-full py-3 pr-12 pl-6 rounded-xl border border-green-800 text-green-900
+                           placeholder-gray-500 focus:bg-green-100 focus:border-green-500
+                           focus:outline-none transition"
+                placeholder="Enter Password"
               />
-              <input
-                type="text"
-                className="w-1/2 py-3 px-6 rounded-xl border border-green-800 text-green-900
-                 placeholder-gray-500 focus:bg-green-100 focus:border-green-500
-                 focus:outline-none transition"
-                placeholder="Enter Task"
-              />
-            </div>
-            <div className="button flex items-center justify-around gap-3">
-              <PasswordBtn />
+              <button
+                type="button"
+                onClick={togglePassword}
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-green-50"
+              >
+                <lord-icon
+                  ref={iconRef}
+                  src="https://cdn.lordicon.com/dicvhxpz.json"
+                  trigger="click"
+                  stroke="bold"
+                  state={showPassword ? "in-reveal" : "hover-cross"}
+                  className="w-10"
+                ></lord-icon>
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Add Password Button */}
+        <button
+          onClick={handleAddPassword}
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition flex
+          items-center justify-center gap-3 group"
+        >
+          <span className="text-2xl inline-block transition-transform duration-500 group-hover:rotate-180 group-active:rotate-[720deg]">
+            +
+          </span>
+          Add Password
+        </button>
+      </div>
+
+      {/* Saved Passwords */}
+      <div className="w-[90%] min-h-[40vh] mx-auto mt-12">
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">
+          Saved Passwords
+        </h2>
+        {passwordArray.length === 0 ? (
+          <p className="text-gray-500">No passwords saved yet.</p>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-gray-300 max-h-[30vh] overflow-y-auto">
+            <table className="min-w-full table-fixed text-left">
+              <thead className="bg-green-100 sticky top-0 text-gray-700 text-sm">
+                <tr>
+                  <th className="py-2 px-4 w-[30%]">Website</th>
+                  <th className="py-2 px-4 w-[25%]">Username</th>
+                  <th className="py-2 px-4 w-[25%]">Password</th>
+                  <th className="py-2 px-4 w-[20%] text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {passwordArray.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="border-t border-gray-200 hover:bg-gray-50 text-sm"
+                  >
+                    {/* Website */}
+                    <td className="py-3 px-4 max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={item.site}
+                          target="_blank"
+                          title={item.site}
+                          className="text-blue-600 underline overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]"
+                        >
+                          {item.site}
+                        </a>
+                        <lord-icon
+                          onClick={() => handleCopy(item.site)}
+                          src="https://cdn.lordicon.com/hmpomorl.json"
+                          trigger="hover"
+                          delay="1500"
+                          state="in-unfold"
+                          className="w-5 h-5 cursor-pointer flex-shrink-0"
+                        ></lord-icon>
+                      </div>
+                    </td>
+
+                    {/* Username */}
+                    <td className="py-3 px-4 max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[170px]"
+                          title={item.username}
+                        >
+                          {item.username}
+                        </span>
+                        <lord-icon
+                          onClick={() => handleCopy(item.username)}
+                          src="https://cdn.lordicon.com/hmpomorl.json"
+                          trigger="hover"
+                          delay="1500"
+                          state="in-unfold"
+                          className="w-5 h-5 cursor-pointer"
+                        ></lord-icon>
+                      </div>
+                    </td>
+
+                    {/* Password */}
+                    <td className="py-3 px-4 max-w-[200px]">
+                      <div className="flex items-center gap-2">
+                        {/* Password text with truncate */}
+                        <span
+                          title={item.password}
+                          className="truncate max-w-[120px] block"
+                        >
+                          {"*".repeat(item.password.length)}
+                        </span>
+
+                        {/* Copy icon fixed size */}
+                        <lord-icon
+                          onClick={() => handleCopy(item.password)}
+                          src="https://cdn.lordicon.com/hmpomorl.json"
+                          trigger="hover"
+                          delay="1500"
+                          state="in-unfold"
+                          className="w-5 h-5 cursor-pointer flex-shrink-0"
+                        ></lord-icon>
+                      </div>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-3 px-4 flex justify-center gap-5">
+                      <lord-icon
+                        onClick={() => handleEdit(item.id)}
+                        src="https://cdn.lordicon.com/fikcyfpp.json"
+                        trigger="hover"
+                        className="w-6 h-6 cursor-pointer"
+                      ></lord-icon>
+                      <lord-icon
+                        onClick={() => handleDelete(item.id)}
+                        src="https://cdn.lordicon.com/jzinekkv.json"
+                        trigger="morph"
+                        state="morph-trash-in"
+                        className="w-6 h-6 cursor-pointer"
+                      ></lord-icon>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   );

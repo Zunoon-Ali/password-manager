@@ -1,11 +1,13 @@
+@import "tailwindcss";
 
-
- 
-  @import "tailwindcss";
-
-
-  @layer components{
-    .myContainer{
-     @apply container mx-auto  
-    }
+@layer components {
+  .myContainer {
+    @apply container mx-auto;
   }
+}
+
+footer {
+  position: relative;
+  bottom: -8px;
+  right: 0;
+}
