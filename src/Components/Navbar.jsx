@@ -42,13 +42,13 @@ const Navbar = () => {
           ></lord-icon>
         </div>
 
-        <div className="githubBtn py-2 px-2 md:py-2 md:px-4 bg-green-800 rounded-2xl flex items-center cursor-pointer hover:bg-green-700 transition">
+        <div className="githubBtn py-2 px-2 md:py-2 md:px-4 bg-green-800 rounded-2xl flex items-center cursor-pointer hover:bg-green-700 transition ring-1 ring-white drop-shadow brightness-110">
           <img
             src="/github.png"
             alt="github"
-            className="w-6 h-6 hover:drop-shadow hover:brightness-120"
+            className="w-6 h-6 drop-shadow brightness-130 hover:drop-shadow hover:brightness-150"
           />
-          <span className="text-gray-300 font-bold underline ml-1 md:ml-3 hover:text-white">
+          <span className="text-gray-300 font-bold ml-1 md:ml-3 hover:text-gray-200">
             Github
           </span>
         </div>
