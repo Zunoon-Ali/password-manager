@@ -7,6 +7,7 @@ const PasswordManager = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ site: "", username: "", password: "" });
   const [passwordArray, setPasswordArray] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const iconRef = useRef(null);
 
@@ -221,13 +222,12 @@ const PasswordManager = () => {
 
         {/* Saved Passwords */}
         <div className="w-[90%] min-h-[40vh] mx-auto mt-12">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">
-            Saved Passwords
-          </h2>
-          {passwordArray.length === 0 ? (
-            <p className="text-gray-500">No passwords saved yet.</p>
-          ) : (
-            <div className="overflow-x-auto rounded-xl border border-gray-300 max-h-[30vh] overflow-y-auto">
+          {/* Header with Delete button */}
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-700">
+              Saved Passwords
+            </h2>
+            {passwordArray.length > 0 && (
               <button
                 onClick={handleDeleteSelected}
                 className="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded-md text-sm"
@@ -236,43 +236,63 @@ const PasswordManager = () => {
                   ? "Delete All"
                   : "Delete Selected"}
               </button>
+            )}
+          </div>
+
+          {passwordArray.length === 0 ? (
+            <p className="text-gray-500">No passwords saved yet.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-xl border border-gray-300 max-h-[40vh] overflow-y-auto">
               <table className="min-w-full table-fixed text-left">
                 <thead className="bg-green-100 sticky top-0 text-gray-700 text-sm">
                   <tr>
-                    <th className="py-2 px-4 w-[30%]">Website</th>
+                    <th className="py-2 px-4 text-center w-[5%]">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedIds.length === passwordArray.length &&
+                          passwordArray.length > 0
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                    <th className="py-2 px-4 w-[30%]">Website (URL)</th>
                     <th className="py-2 px-4 w-[25%]">Username</th>
                     <th className="py-2 px-4 w-[25%]">Password</th>
-                    <th className="py-2 px-4 w-[20%] text-center">Actions</th>
+                    <th className="py-2 px-4 w-[15%] text-center">Actions</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {passwordArray.map((item) => (
                     <tr
                       key={item.id}
                       className="border-t border-gray-200 hover:bg-gray-50 text-sm"
                     >
+                      {/* Checkbox */}
                       <td className="py-3 px-4 text-center">
-        <input
-          type="checkbox"
-          checked={selectedIds.includes(item.id)}
-          onChange={() => handleSelectOne(item.id)}
-        />
-      </td>
-                      {/* Website */}
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(item.id)}
+                          onChange={() => handleSelectOne(item.id)}
+                        />
+                      </td>
+
+                      {/* Website (URL) */}
                       <td className="py-3 px-4 max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <a
                             href={item.site}
                             target="_blank"
                             title={item.site}
-                            className="text-blue-600 underline overflow-hidden text-ellipsis whitespace-nowrap max-w-[120px]"
+                            className="text-blue-600 underline truncate max-w-[140px]"
                           >
                             {item.site}
                           </a>
                           <lord-icon
                             onClick={() => handleCopy(item.site)}
                             src="https://cdn.lordicon.com/hmpomorl.json"
-                            trigger="hover"
+                            trigger="in"
                             delay="1500"
                             state="in-unfold"
                             className="w-5 h-5 cursor-pointer flex-shrink-0"
@@ -284,7 +304,7 @@ const PasswordManager = () => {
                       <td className="py-3 px-4 max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span
-                            className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[170px]"
+                            className="truncate max-w-[150px]"
                             title={item.username}
                           >
                             {item.username}
@@ -303,15 +323,12 @@ const PasswordManager = () => {
                       {/* Password */}
                       <td className="py-3 px-4 max-w-[200px]">
                         <div className="flex items-center gap-2">
-                          {/* Password text with truncate */}
                           <span
                             title={item.password}
                             className="truncate max-w-[120px] block"
                           >
                             {"*".repeat(item.password.length)}
                           </span>
-
-                          {/* Copy icon fixed size */}
                           <lord-icon
                             onClick={() => handleCopy(item.password)}
                             src="https://cdn.lordicon.com/hmpomorl.json"
