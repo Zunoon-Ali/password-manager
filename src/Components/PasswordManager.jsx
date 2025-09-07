@@ -43,6 +43,17 @@ const PasswordManager = () => {
     const newEntry = { ...form, id: Date.now() };
     setPasswordArray([...passwordArray, newEntry]);
     setForm({ site: "", username: "", password: "" }); // reset
+       toast("Password Saved ! ", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
   };
 
   const handleDelete = (id) => {
@@ -51,7 +62,23 @@ const PasswordManager = () => {
       const filtered = passwordArray.filter((item) => item.id !== id);
       setPasswordArray(filtered);
       localStorage.setItem("passwords", JSON.stringify(filtered));
+
+
+         toast("Password Delete! ", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
+
     }
+  
+ 
   };
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -63,7 +90,7 @@ const PasswordManager = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: "dark",
         transition: Bounce,
       });
     });
@@ -108,6 +135,18 @@ const PasswordManager = () => {
       setPasswordArray(filtered);
       setSelectedIds([]);
       localStorage.setItem("passwords", JSON.stringify(filtered));
+
+         toast("All Password Delete! ", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+      });
     }
   };
 
